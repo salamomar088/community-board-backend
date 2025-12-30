@@ -14,7 +14,7 @@ export const findUserById = async (userId) => {
       fullname,
       username,
       email,
-      profile_image
+      profile_picture
     FROM users
     WHERE id = ?
     `,
@@ -34,7 +34,7 @@ export const createUser = async (fullname, username, email, hashedPassword) => {
 
 export const updateUserProfileImage = async (userId, imageBuffer) => {
   const [result] = await db.query(
-    "UPDATE users SET profile_image = ? WHERE id = ?",
+    "UPDATE users SET profile_picture = ? WHERE id = ?",
     [imageBuffer, userId]
   );
   return result.affectedRows;

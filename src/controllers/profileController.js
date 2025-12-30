@@ -28,8 +28,8 @@ export const getUserProfile = async (req, res, next) => {
     }
 
     // Convert BLOB → base64
-    if (user.profile_image) {
-      user.profile_image = `data:image/png;base64,${user.profile_image.toString(
+    if (user.profile_picture) {
+      user.profile_picture = `data:image/png;base64,${user.profile_picture.toString(
         "base64"
       )}`;
     }

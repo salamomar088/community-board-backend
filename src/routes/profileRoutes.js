@@ -1,5 +1,6 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
+import upload from "../middleware/upload.js";
 import {
   uploadProfileImage,
   getUserProfile,
@@ -7,8 +8,15 @@ import {
 
 const router = express.Router();
 
-// Protected
-router.put("/image", authMiddleware, uploadProfileImage);
+// PUBLIC
 router.get("/:id", getUserProfile);
+
+// PROTECTED (WITH MULTER)
+router.put(
+  "/image",
+  authMiddleware,
+  upload.single("image"), // 🔑 THIS MUST EXIST
+  uploadProfileImage
+);
 
 export default router;
