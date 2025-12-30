@@ -2,6 +2,7 @@ import logger from "../services/logger.js";
 import AppError from "../services/AppError.js";
 import {
   getAllPostsWithUser,
+  getPostByIdWithUser, // ✅ NEW
   createPost as createPostModel,
   findPostOwner,
   deletePostById,
@@ -11,6 +12,25 @@ export const getPosts = async (req, res, next) => {
   try {
     const posts = await getAllPostsWithUser();
     res.json(posts);
+  } catch (err) {
+    next(err);
+  }
+};
+export const getPostById = async (req, res, next) => {
+  try {
+    const postId = Number(req.params.id);
+
+    if (Number.isNaN(postId)) {
+      return next(new AppError("Invalid post ID", 400));
+    }
+
+    const post = await getPostByIdWithUser(postId);
+
+    if (!post) {
+      return next(new AppError("Post not found", 404));
+    }
+
+    res.json(post);
   } catch (err) {
     next(err);
   }
