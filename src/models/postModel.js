@@ -3,30 +3,45 @@ import db from "../config/dataBase.js";
 export const getAllPostsWithUser = async () => {
   const [rows] = await db.query(`
     SELECT 
-      posts.id,
-      posts.title,
-      posts.content,
-      posts.created_at,
-      posts.user_id,
-      users.fullname,
-      users.email
-    FROM posts
-    JOIN users ON users.id = posts.user_id
-    ORDER BY posts.created_at DESC
+      p.id,
+      p.title,
+      p.content,
+      p.created_at,
+      p.user_id,
+
+      u.fullname,
+      u.username,
+      u.profile_picture
+    FROM posts p
+    JOIN users u ON u.id = p.user_id
+    ORDER BY p.created_at DESC
   `);
-  return rows;
+
+  // normalize avatar field
+  return rows.map((row) => {
+    if (row.profile_picture) {
+      row.profile_image = `data:image/png;base64,${row.profile_picture.toString(
+        "base64"
+      )}`;
+      delete row.profile_picture;
+    }
+    return row;
+  });
 };
+
 export const getPostByIdWithUser = async (postId) => {
-  const [rows] = await db.query(
+  const [[row]] = await db.query(
     `
     SELECT 
       p.id,
       p.title,
       p.content,
       p.created_at,
-      u.id AS user_id,
+      p.user_id,
+
+      u.fullname,
       u.username,
-      u.email
+      u.profile_picture
     FROM posts p
     JOIN users u ON p.user_id = u.id
     WHERE p.id = ?
@@ -34,7 +49,16 @@ export const getPostByIdWithUser = async (postId) => {
     [postId]
   );
 
-  return rows[0] || null;
+  if (!row) return null;
+
+  if (row.profile_picture) {
+    row.profile_image = `data:image/png;base64,${row.profile_picture.toString(
+      "base64"
+    )}`;
+    delete row.profile_picture;
+  }
+
+  return row;
 };
 
 export const createPost = async (
