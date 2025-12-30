@@ -1,5 +1,5 @@
 import AppError from "../services/AppError.js";
-import { updateUserProfileImage } from "../models/userModel.js";
+import { updateUserProfileImage, findUserById } from "../models/userModel.js";
 
 export const uploadProfileImage = async (req, res, next) => {
   try {
@@ -14,6 +14,27 @@ export const uploadProfileImage = async (req, res, next) => {
     }
 
     res.json({ status: "success", message: "Profile image updated" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await findUserById(req.params.id);
+
+    if (!user) {
+      return next(new AppError("User not found", 404));
+    }
+
+    // Convert BLOB → base64
+    if (user.profile_image) {
+      user.profile_image = `data:image/png;base64,${user.profile_image.toString(
+        "base64"
+      )}`;
+    }
+
+    res.json(user);
   } catch (err) {
     next(err);
   }

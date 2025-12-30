@@ -6,6 +6,23 @@ export const findUserByEmail = async (email) => {
   ]);
   return user || null;
 };
+export const findUserById = async (userId) => {
+  const [[user]] = await db.query(
+    `
+    SELECT 
+      id,
+      fullname,
+      username,
+      email,
+      profile_image
+    FROM users
+    WHERE id = ?
+    `,
+    [userId]
+  );
+
+  return user || null;
+};
 
 export const createUser = async (fullname, username, email, hashedPassword) => {
   const [result] = await db.query(

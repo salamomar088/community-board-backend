@@ -17,7 +17,7 @@ export const getAllPostsWithUser = async () => {
   return rows;
 };
 export const getPostByIdWithUser = async (postId) => {
-  const [rows] = await pool.query(
+  const [rows] = await db.query(
     `
     SELECT 
       p.id,
