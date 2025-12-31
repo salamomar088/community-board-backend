@@ -39,24 +39,30 @@ export const getPostById = async (req, res, next) => {
 
 export const createPost = async (req, res, next) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
 
     if (!title || !content) {
       return next(new AppError("Title and content are required", 400));
     }
 
-    const imageBuffer = req.file ? req.file.buffer : null; // safe if images paused
-    await createPostModel(req.user.id, title, content, imageBuffer);
+    // ✅ FIX: safely stringify tags
+    const tagsJson = JSON.stringify(Array.isArray(tags) ? tags : []);
+
+    const imageBuffer = req.file ? req.file.buffer : null;
+
+    await createPostModel(req.user.id, title, content, imageBuffer, tagsJson);
 
     logger.info(`Post created by user ${req.user.id}`);
 
-    res
-      .status(201)
-      .json({ status: "success", message: "Post created successfully" });
+    res.status(201).json({
+      status: "success",
+      message: "Post created successfully",
+    });
   } catch (err) {
     next(err);
   }
 };
+
 export const updatePost = async (req, res, next) => {
   try {
     const postId = Number(req.params.id);

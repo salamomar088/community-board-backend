@@ -170,3 +170,6 @@ AFTER DELETE ON posts
 FOR EACH ROW
 DELETE FROM likes WHERE post_id = OLD.id;
 
+--added tags column to posts table--
+ALTER TABLE posts
+ADD tags JSON NULL;
