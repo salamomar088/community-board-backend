@@ -5,6 +5,7 @@ import {
   getPostById, // ✅ NEW
   createPost,
   deletePost,
+  updatePost,
 } from "../controllers/postController.js";
 
 const router = express.Router();
@@ -16,5 +17,5 @@ router.get("/:id", getPostById); // ✅ FIX
 // Protected
 router.post("/", authMiddleware, createPost);
 router.delete("/:id", authMiddleware, deletePost);
-
+router.put("/:id", authMiddleware, updatePost);
 export default router;

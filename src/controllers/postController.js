@@ -6,6 +6,7 @@ import {
   createPost as createPostModel,
   findPostOwner,
   deletePostById,
+  updatePostById,
 } from "../models/postModel.js";
 
 export const getPosts = async (req, res, next) => {
@@ -52,6 +53,31 @@ export const createPost = async (req, res, next) => {
     res
       .status(201)
       .json({ status: "success", message: "Post created successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+export const updatePost = async (req, res, next) => {
+  try {
+    const postId = Number(req.params.id);
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+      return next(new AppError("Title and content are required", 400));
+    }
+
+    const owner = await findPostOwner(postId);
+    if (!owner) {
+      return next(new AppError("Post not found", 404));
+    }
+
+    if (owner.user_id !== req.user.id) {
+      return next(new AppError("Unauthorized action", 403));
+    }
+
+    await updatePostById(postId, title, content);
+
+    res.json({ status: "success", message: "Post updated successfully" });
   } catch (err) {
     next(err);
   }
